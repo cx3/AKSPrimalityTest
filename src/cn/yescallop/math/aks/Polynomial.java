@@ -1,10 +1,13 @@
-package cn.yescallop.aks;
+package cn.yescallop.math.aks;
 
-import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-class Polynomial {
+import static cn.yescallop.math.MathUtil.getBinomialCoef;
+
+public class Polynomial {
 
     private Set<Monomial> terms;
 
@@ -25,7 +28,7 @@ class Polynomial {
                     k
             ));
         }
-        return p.collect();
+        return p;
     }
 
     public void addTerm(Monomial term) {
@@ -33,20 +36,12 @@ class Polynomial {
     }
 
     public Polynomial collect() {
-        //TODO
+        Map<Long, Monomial> res = new HashMap<>();
+        terms.forEach(term -> res.compute(
+                ((long) term.expX << 32) | term.expA,
+                (i, m) -> m == null ? term : m.addCoef(term.coef)
+        ));
+        this.terms = new HashSet<>(res.values());
         return this;
-    }
-
-    private static BigInteger getBinomialCoef(int n, int k) {
-        return factorial(n).divide(factorial(k))
-                .divide(factorial(n - k));
-    }
-
-    private static BigInteger factorial(int n) {
-        BigInteger res = BigInteger.ONE;
-        for (int i = 2; i <= n; i++) {
-            res = res.multiply(BigInteger.valueOf(i));
-        }
-        return res;
     }
 }

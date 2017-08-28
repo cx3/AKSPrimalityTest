@@ -7,14 +7,15 @@ public class MathUtil {
     public static final BigInteger BI_TWO = BigInteger.valueOf(2);
     public static final BigInteger BI_THREE = BigInteger.valueOf(3);
     public static final BigInteger BI_FOUR = BigInteger.valueOf(4);
+    public static final BigInteger BI_SIX = BigInteger.valueOf(6);
     public static final BigInteger BI_NINE = BigInteger.valueOf(9);
 
-    public static final double LOG2 = Math.log(2);
-    public static final double LOG3 = Math.log(3);
+    private static final double LOG2 = Math.log(2);
+    private static final double LOG3 = Math.log(3);
 
     /**
-     * A recursive hack for BigInteger exponent
-     * Returns the value a^n, the nth power of a
+     * Returns the value a^n, the nth power of a.
+     * A recursive hack for BigInteger exponent.
      */
     public static BigInteger pow(BigInteger a, BigInteger n) {
         if (n.equals(BigInteger.ONE))
@@ -27,7 +28,7 @@ public class MathUtil {
     }
 
     /**
-     * Returns the value φ(n), the Euler's totient function value of n
+     * Returns the value φ(n), the Euler's totient function value of n.
      */
     public static int euler(int n) {
         if (n == 1)
@@ -41,7 +42,8 @@ public class MathUtil {
     }
 
     /**
-     * Returns the Euclidean algorithm value of a, b
+     * Returns the greatest common divisor of a, b.
+     * Uses the Euclidean algorithm.
      */
     public static int gcd(int a, int b) {
         while (b != 0) {
@@ -53,7 +55,7 @@ public class MathUtil {
     }
 
     /**
-     * Returns the multiplicative order of a modulo n
+     * Returns the multiplicative order of a modulo n.
      */
     public static int ord(BigInteger a, int n) {
         BigInteger _n = BigInteger.valueOf(n);
@@ -64,26 +66,28 @@ public class MathUtil {
     }
 
     /**
-     * Returns if integer a (odd) is a perfect power
+     * Returns if integer a (odd) is a perfect power.
      */
     public static boolean isPerfectPower(BigInteger a) {
-        if (isPerfectSquare(a))
+        if (intSqrt(a) != null)
             return true;
         double maxi = log2(a);
         for (int i = 3; i <= maxi; i += 2) {
-            if (isPerfectPower(a, i))
+            if (intNthRootOdd(a, i) != null)
                 return true;
         }
         return false;
     }
 
     /**
-     * Returns if integer a (odd) is a perfect power of n
+     * Returns the integer nth (n > 1 and n is odd) root
+     * of a (odd) if it has one, or else returns null.
+     * Uses 2-adic Newton iteration.
      */
-    public static boolean isPerfectPower(BigInteger a, int n) {
+    public static BigInteger intNthRootOdd(BigInteger a, int n) {
         int k = (int) Math.ceil(log2(a) / n);
         int r = (int) Math.ceil(log2(k));
-        if (r < 1) return false;
+        if (r < 1) return null;
         BigInteger g = BigInteger.ONE;
         BigInteger s = BigInteger.ONE;
         BigInteger m = BI_FOUR;
@@ -108,22 +112,25 @@ public class MathUtil {
                         .subtract(a)
                         .multiply(s)
         ).mod(BI_TWO.pow(k));
-        return g.pow(n).equals(a);
+        return g.pow(n).equals(a) ? g : null;
     }
 
     /**
-     * Returns if integer a is a perfect square
+     * Returns the integer square root of a if it has one, or else returns null.
+     * Uses 3-adic Newton iteration.
      */
-    public static boolean isPerfectSquare(BigInteger a) {
+    public static BigInteger intSqrt(BigInteger a) {
         if (a.mod(BI_THREE).equals(BI_TWO))
-            return false;
+            return null;
         BigInteger[] dr;
         while ((dr = a.divideAndRemainder(BI_NINE))[1].equals(BigInteger.ZERO)) {
             a = dr[0];
         }
+        if (dr[1].equals(BI_THREE) || dr[1].equals(BI_SIX))
+            return null;
         int k = (int) Math.ceil(log3(a) / 2);
         int r = (int) Math.ceil(log2(k));
-        if (r < 1) return false;
+        if (r < 1) return null;
         BigInteger g = BigInteger.ONE;
         BigInteger s = BI_TWO;
         BigInteger m = BI_NINE;
@@ -141,32 +148,32 @@ public class MathUtil {
                         .subtract(a)
                         .multiply(s)
         ).mod(m);
-        return g.pow(2).equals(a) || m.subtract(g).pow(2).equals(a);
+        return g.pow(2).equals(a) || (g = m.subtract(g)).pow(2).equals(a) ? g : null;
     }
 
     /**
-     * Returns the the base 2 logarithm of n
+     * Returns the the base 2 logarithm of n.
      */
     public static double log2(BigInteger n) {
         return log(n) / LOG2;
     }
 
     /**
-     * Returns the the base 2 logarithm of n
+     * Returns the the base 2 logarithm of n.
      */
-    public static double log2(double n) {
+    private static double log2(double n) {
         return Math.log(n) / LOG2;
     }
 
     /**
-     * Returns the the base 3 logarithm of n
+     * Returns the the base 3 logarithm of n.
      */
     public static double log3(BigInteger n) {
         return log(n) / LOG3;
     }
 
     /**
-     * Returns the value ln n, the natural logarithm of n
+     * Returns the value ln n, the natural logarithm of n.
      */
     public static double log(BigInteger n) {
         int b = n.bitLength() - 1022;
@@ -177,7 +184,7 @@ public class MathUtil {
     }
 
     /**
-     * Returns the value C(n, k), the binomial coefficient of n, k
+     * Returns the value C(n, k), the binomial coefficient of n, k.
      */
     public static BigInteger binomialCoef(int n, int k) {
         return factorial(n).divide(factorial(k))
@@ -185,7 +192,7 @@ public class MathUtil {
     }
 
     /**
-     * Returns the value n!, the factorial of n
+     * Returns the value n!, the factorial of n.
      */
     public static BigInteger factorial(int n) {
         BigInteger res = BigInteger.ONE;

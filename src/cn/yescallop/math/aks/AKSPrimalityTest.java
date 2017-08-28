@@ -11,13 +11,12 @@ public class AKSPrimalityTest {
     }
 
     /**
-     * Returns if integer n is prime, using the AKS algorithm
-     * (https://en.wikipedia.org/wiki/AKS_primality_test)
+     * Returns if integer n is prime.
+     * Uses the AKS primality test algorithm.
      */
     public static boolean isPrime(BigInteger n) {
-        n = n.abs();
-        //if (n.bitLength() < 64)
-        //    return isPrime(n.longValue());
+        if (n.signum() <= 0)
+            return false;
         if (n.equals(BI_TWO)) // two is prime
             return true;
         if (!n.testBit(0) || n.equals(BigInteger.ONE)) //composite or one
@@ -43,7 +42,7 @@ public class AKSPrimalityTest {
     }
 
     /**
-     * Returns the smallest value of r such that ord(n, r) > (log2 n)^2
+     * Returns the smallest value of r such that ord(n, r) > (log2 n)^2.
      */
     private static int findSmallestOrdValue(BigInteger n, double log2n) {
         int mr = (int) Math.pow(log2n, 2);
@@ -61,7 +60,7 @@ public class AKSPrimalityTest {
     }
 
     /**
-     * Returns if a|n for all 2 ≤ a ≤ min(r, n−1)
+     * Returns if a|n for all 2 ≤ a ≤ min(r, n−1).
      */
     private static boolean checkDivision(BigInteger n, int r) {
         r = Math.min(r, n.intValue() - 1);
@@ -73,7 +72,7 @@ public class AKSPrimalityTest {
     }
 
     /**
-     * Returns if (x+a)^n ≡ x^n+a (mod x^r−1, n) for 1≤ a ≤ ⌊sqrt(euler(r))*(log2 n)⌋
+     * Returns if (x+a)^n ≡ x^n+a (mod x^r−1, n) for 1≤ a ≤ ⌊sqrt(euler(r))*(log2 n)⌋.
      */
     private static boolean checkPolynomialModulo(BigInteger n, double log2n, int r) {
         int ma = (int) (Math.sqrt(euler(r)) * log2n);

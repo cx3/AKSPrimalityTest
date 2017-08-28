@@ -1,2 +1,2 @@
-# AKSPrimaryTest
-AKS primary test library for Java 8
+# AKSPrimalityTest
+AKS primality test library for Java 8
